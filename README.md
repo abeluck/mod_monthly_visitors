@@ -105,6 +105,7 @@ Configuration
   --------------------------------------   --------- ---------------------------------------------------------------------------------------------------------------
   `mod_monthly_visitors_mmdb_path`         ``        The path to the GeoIp database in mmdb format.
   `mod_monthly_visitors_client_patterns`   `{}`      A table of regex keys and client type values.
+  `mod_monthly_visitors_record_country`    `"ALL"`   A two-digit ISO code string for the country to capture stats for, or the special value `ALL` to log all countries.
 
 Example of `mod_monthly_visitors_client_patterns`:
 

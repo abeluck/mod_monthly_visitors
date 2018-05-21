@@ -7,6 +7,7 @@ local geodb = assert(mmdb.read(geoip_db_filename), "GeoIP mmdb database not vali
 
 local client_patterns = module:get_option("mod_monthly_visitors_client_patterns", {});
 local unknown_client = "?";
+local country_to_record_iso = module:get_option("mod_monthly_visitors_record_country", "ALL");
 
 local function current_month()
   return os.date("%Y-%m");
@@ -34,6 +35,22 @@ local function geocode(ip)
   return country .. "-" .. subdiv .. "-" .. city;
 end
 
+local function should_record(ip)
+  if country_to_record_iso == "ALL" then
+    return true;
+  end
+
+  local geodata;
+  if not pcall(function() geodata = geodb:search_ipv4(ip); end ) then
+    return false;
+  end
+
+  local country = "";
+  if geodata["country"] ~= nil then
+    country = geodata.country.iso_code
+  end
+  return country == country_to_record_iso;
+end
 
 local function has_been_recorded(username)
   local curr_month = current_month();
@@ -73,6 +90,10 @@ end
 local function record_monthly_visitor(username, ip, resource)
 
   if has_been_recorded(username) then
+    return;
+  end
+
+  if not should_record(ip) then
     return;
   end
 
